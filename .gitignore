@@ -113,3 +113,7 @@ ENV/
 
 # CI
 .ci
+
+# VSCode
+
+.vscode/
