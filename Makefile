@@ -2,9 +2,6 @@ current_dir = $(shell pwd)
 
 PROJECT = ml_mining
 
-DOCKERFILES = Dockerfile:$(PROJECT)
-DOCKER_ORG = "srcd"
-
 # Including ci Makefile
 CI_REPOSITORY ?= https://github.com/src-d/ci.git
 CI_BRANCH ?= v1
@@ -24,15 +21,8 @@ check:
 test:
 	python3 -m unittest discover
 
-.PHONY: docker-test
-docker-test:
-	docker ps | grep bblfshd  # bblfsh server should be run. Try `make bblfsh-start` command.
-	docker run --rm -it --network host --entrypoint python3 -w /ml_mining \
-		-e SKIP_BBLFSH_UTILS_TESTS=1 \
-		srcd/ml_mining:$(VERSION) -m unittest discover
-
 .PHONY: bblfsh-start
 bblfsh-start:
 	! docker ps | grep bblfshd # bblfsh server should not be running already
-	docker run -d --name ml_mining_bblfshd --privileged -p 9432\:9432 bblfsh/bblfshd\:v2.12.1
-	docker exec -it ml_mining_bblfshd bblfshctl driver install python bblfsh/python-driver\:v2.9.0
+	docker run -d --name ml_mining_bblfshd --privileged -p 9432\:9432 bblfsh/bblfshd\:v2.14.0
+	docker exec -it ml_mining_bblfshd bblfshctl driver install python bblfsh/python-driver\:v2.10.0
