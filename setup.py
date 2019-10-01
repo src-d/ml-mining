@@ -1,16 +1,15 @@
 from importlib.machinery import SourceFileLoader
-import io
-import os.path
+import os
+from pathlib import Path
 
 from setuptools import find_packages, setup
 
+pkg_path = Path("sourced/ml/mining")
 sourcedml = SourceFileLoader(
-    "sourced-ml-mining", "./sourced/ml/mining/__init__.py"
+    "sourced-ml-mining", str(pkg_path / "__init__.py")
 ).load_module()
 
-with io.open(
-    os.path.join(os.path.dirname(__file__), "README.md"), encoding="utf-8"
-) as f:
+with (Path(__file__).parent / "README.md").open(encoding="utf-8") as f:
     long_description = f.read()
 
 exclude_packages = (
@@ -18,7 +17,7 @@ exclude_packages = (
     if not os.getenv("ML_MINING_SETUP_INCLUDE_TESTS", False)
     else ()
 )
-
+include_extensions = ["yaml", "jinja2"]
 
 setup(
     name="sourced-ml-mining",
@@ -37,12 +36,23 @@ setup(
     entry_points={"console_scripts": ["srcdmine=sourced.ml.mining.__main__:main"]},
     keywords=["machine learning on source code", "github", "bblfsh", "babelfish"],
     install_requires=[
-        "sourced-ml-core>=0.0.5",
+        "sourced-ml-core>=0.0.6",
         "PyStemmer>=1.3,<2.0",
         "humanize>=0.5.0,<0.6",
+        "clickhouse-driver>=0.1.1,<1.0",
+        "scipy>=1.0,<2.0",
+        "jinja2>=2.10.1<3.0",
+        "pyyaml>=5.1.2<6",
     ],
     tests_require=["docker>=3.6.0,<4.0"],
-    package_data={"": ["LICENSE.md", "README.md"]},
+    package_data={
+        "": ["LICENSE.md", "README.md"],
+        "sourced": [
+            str(p.relative_to("sourced"))
+            for ext in include_extensions
+            for p in pkg_path.rglob("*." + ext)
+        ],
+    },
     python_requires=">=3.6",
     classifiers=[
         "Development Status :: 3 - Alpha",
