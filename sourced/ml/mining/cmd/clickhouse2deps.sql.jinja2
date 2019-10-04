@@ -1,0 +1,38 @@
+SELECT DISTINCT repo, file, value FROM (
+    SELECT repo, file, value
+    FROM {{ table }}
+    WHERE lang = '{{ lang }}'
+        AND file NOT LIKE '%vendor/%'
+        AND ({%- for filter in query_args.filters -%}
+            {% if loop.index > 1 %} 
+            OR {%  endif %}
+                (
+                    {%- for cond in filter -%}
+                    {%- if loop.index > 1 %} AND {%  endif %}
+                    {{ cond }}
+                    {%- endfor %}
+                )
+        {%- endfor %}
+        )
+    {%- if query_args.join_args %}
+    UNION ALL
+    SELECT repo, file, value
+    FROM {{ table }}
+    JOIN (
+        SELECT repo, file, {{ query_args.join_args.col_in }}
+        FROM {{ table }}
+        WHERE lang = '{{ lang }}'
+            AND file NOT LIKE '%vendor/%'
+            AND type = 'Import'
+    ) AS t
+    ON t.repo = {{ table }}.repo
+        AND t.file = {{ table }}.file
+        AND t.{{ query_args.join_args.col_in }} = {{ table }}.{{ query_args.join_args.col_out }}
+
+    WHERE lang = '{{ lang }}'
+        AND file NOT LIKE '%vendor/%'
+        AND {{ table }}.pkey = 'Path'
+        AND {{ table }}.uptypes = []
+        AND {{ table }}.type = '{{ query_args.join_args.type }}'
+    {% endif %}
+);

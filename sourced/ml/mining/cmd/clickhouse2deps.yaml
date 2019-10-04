@@ -1,0 +1,42 @@
+cpp:
+  filters:
+    - - "uptypes = ['uast:InlineImport']"
+csharp:
+  filters:
+    - - "uptypes = ['uast:Import']"
+    - - "uptypes = ['uast:Import', 'uast:Alias']"
+      - "pkey = 'Node'"
+go:
+  filters:
+    - - "uptypes = ['uast:Import']"
+    - - "uptypes = ['uast:Import', 'uast:Alias']"
+      - "pkey = 'Node'"
+    - - "uptypes = ['go:ImportSpec']"
+      - "type = 'StringLiteral'"
+java:
+  filters:
+    - - "uptypes = ['uast:Import']"
+  join_args:
+    col_in: "right"
+    col_out: "id"
+    type: "Identifier"
+javascript:
+  filters:
+    - - "has(uptypes, 'uast:Import')"
+      - "type = 'StringLiteral'"
+  join_args:
+    col_in: "right"
+    col_out: "id"
+    type: "StringLiteral"
+php:
+  filters:
+    - - "uptypes = ['uast:RuntimeImport']"
+python:
+  filters:
+    - - "uptypes = ['uast:RuntimeImport']"
+    - - "uptypes = ['uast:RuntimeImport','uast:Alias']"
+      - "pkey = 'Node'"
+  join_args:
+    col_in: "line"
+    col_out: "line"
+    type: "Identifier"
