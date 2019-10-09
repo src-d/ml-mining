@@ -60,11 +60,11 @@ class Dependencies(Model):
         msg = "Total number of files: %d\n" % len(self._files)
         msg += "Total number of repos: %d\n" % len(set(self._ind_to_repos.values()))
         msg += "Total number of dependencies: %d\n" % len(self._deps)
-        msg += "Total number of non-zero entries: %d\n" % len(self._matrix.getnnz())
+        msg += "Total number of non-zero entries: %d\n" % self._matrix.getnnz()
         return msg
 
     @property
-    def files(self, lang):
+    def files(self):
         """
         Returns the files in the order which corresponds to the matrix's rows.
         """
@@ -78,7 +78,7 @@ class Dependencies(Model):
         return self._deps
 
     @property
-    def matrix(self, lang):
+    def matrix(self):
         """
         Returns the sparse co-occurrence matrix.
         """
