@@ -12,13 +12,13 @@ from sourced.ml.core.models.license import DEFAULT_LICENSE
 @register_model
 class Dependencies(Model):
     """
-    Occurence matrix between files and dependencies.
+    Co-occurence matrix between files and dependencies.
     """
 
     NAME = "deps"
     VENDOR = "source{d}"
     DESCRIPTION = (
-        "Binary cooccurrence matrix between dependencies and files,"
+        "Binary co-occurrence matrix between dependencies and files,"
         "as well as the mapping from file names to languages."
     )
     LICENSE = DEFAULT_LICENSE
@@ -57,14 +57,17 @@ class Dependencies(Model):
         }
 
     def dump(self):
-        msg = "Total number of files: %d\n" % len(self._files)
-        msg += "Total number of repos: %d\n" % len(set(self._ind_to_repos.values()))
-        msg += "Total number of dependencies: %d\n" % len(self._deps)
-        msg += "Total number of non-zero entries: %d\n" % len(self._matrix.getnnz())
+        msg = "Number of repos: %d\n" % len(set(self._ind_to_repos.values()))
+        msg += "Number of files: %d\n" % len(self._files)
+        msg += "Number of distinct dependencies: %d\n" % len(self._deps)
+        msg += (
+            "Number of non-zero entries in the file-dependencies co-occurence matrix: %d\n"
+            % self._matrix.getnnz()
+        )
         return msg
 
     @property
-    def files(self, lang):
+    def files(self):
         """
         Returns the files in the order which corresponds to the matrix's rows.
         """
@@ -78,7 +81,7 @@ class Dependencies(Model):
         return self._deps
 
     @property
-    def matrix(self, lang):
+    def matrix(self):
         """
         Returns the sparse co-occurrence matrix.
         """
