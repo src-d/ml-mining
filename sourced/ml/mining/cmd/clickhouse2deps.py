@@ -7,7 +7,7 @@ from scipy.sparse import coo_matrix
 import yaml
 
 from sourced.ml.mining.models import Dependencies
-
+from sourced.ml.mining.utils import check_remove_filepath, path_with_suffix
 
 QUERY_TEMPLATE = "clickhouse2deps.sql.jinja2"
 QUERY_ARGS = "clickhouse2deps.yaml"
@@ -28,17 +28,9 @@ def clickhouse2deps(args):
     Extract dependencies from UASTs in a Clickhouse DB.
     """
     log = logging.getLogger("clickhouse2deps")
-    if not args.output_path.suffix == ".asdf":
-        args.output_path = args.output_path.with_suffix(".asdf")
-    if args.output_path.exists():
-        if not args.force:
-            log.error(
-                "%s already exists, aborting (use -f/--force to overwrite)",
-                args.output_path,
-            )
-            raise FileExistsError
-        log.warn("%s already exists, overwritten", args.output_path)
-        args.output_path.unlink()
+    output_path = path_with_suffix(args.output_path, ".asdf")
+    check_remove_filepath(output_path, log, args.force)
+
     log.info("Loading the query template ...")
     root = Path(__file__).parent
     template_loader = jinja2.FileSystemLoader(str(root))
@@ -105,5 +97,5 @@ def clickhouse2deps(args):
     model = Dependencies(log_level=args.log_level).construct(
         matrix, files, deps, ind_to_langs, ind_to_repos
     )
-    model.save(args.output_path, series="deps")
-    log.info("Saved model to %s" % args.output_path)
+    model.save(output_path, series="deps")
+    log.info("Saved model to %s" % output_path)

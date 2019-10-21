@@ -8,6 +8,7 @@ from sourced.ml.mining.cmd import (
     ArgumentDefaultsHelpFormatterNoNone,
     clickhouse2deps,
     CLICKHOUSE_LANGS,
+    collect_stdlibs,
 )
 
 
@@ -72,7 +73,26 @@ def parse_args() -> argparse.Namespace:
         choices=CLICKHOUSE_LANGS,
         help="Languages to consider while extracting dependencies.",
     )
+    # --------------------------------------------------------------------------------------------
 
+    collect_stdlibs_parser = add_parser(
+        "collect-stdlibs",
+        "Collect the lists of standard libraries for each language Babelfish can parse.",
+    )
+    collect_stdlibs_parser.set_defaults(handler=collect_stdlibs)
+    collect_stdlibs_parser.add_argument(
+        "-o",
+        "--output-path",
+        type=Path,
+        help="Output path to the resulting ASDF model with the extracted standard libraries.",
+    )
+    collect_stdlibs_parser.add_argument(
+        "-f",
+        "--force",
+        action="store_true",
+        help="Boolean indicating whether to overwrite the existing ASDF model specified by "
+        "-o/--output-path.",
+    )
     args = parser.parse_args()
     if not hasattr(args, "handler"):
         args.handler = lambda _: parser.print_usage()  # noqa: E731

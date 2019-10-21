@@ -43,6 +43,7 @@ setup(
         "scipy>=1.0,<2.0",
         "jinja2>=2.10.1<3.0",
         "pyyaml>=5.1.2<6",
+        "scrapy>=1.7.3<2.0",
     ],
     tests_require=["docker>=3.6.0,<4.0"],
     package_data={
