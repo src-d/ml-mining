@@ -6,4 +6,3 @@ from sourced.ml.mining.utils.fs import (
     path_with_suffix,
 )
 from sourced.ml.mining.utils.swivel import create_swivel_inputs
-
